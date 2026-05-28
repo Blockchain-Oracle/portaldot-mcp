@@ -1,0 +1,23 @@
+{
+  "name": "@portaldot-mcp/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Portaldot MCP server — stdio transport for any MCP client (Claude Code, Cursor, Desktop).",
+  "bin": {
+    "portaldot-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@portaldot-mcp/core": "workspace:*"
+  }
+}

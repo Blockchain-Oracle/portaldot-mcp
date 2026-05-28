@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* Design tokens — see docs/DESIGN.md. Concrete hex, restrained accent. */
+@theme {
+  --color-bg: #09090b;
+  --color-surface: #131316;
+  --color-surface-2: #1a1a1f;
+  --color-border: #26262c;
+  --color-border-hover: #34343c;
+  --color-fg: #ededef;
+  --color-fg-secondary: #9a9aa5;
+  --color-fg-muted: #6b6b76;
+  --color-accent: #7c5cfc;
+  --color-success: #22c55e;
+  --color-pending: #f59e0b;
+  --color-destructive: #ef4444;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-card: 12px;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle scrollbar that fits the dark surface */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "@portaldot-mcp/skill",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cross-client install instructions (SKILL.md) for the Portaldot MCP server."
+}

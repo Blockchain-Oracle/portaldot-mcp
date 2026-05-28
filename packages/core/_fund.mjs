@@ -1,0 +1,11 @@
+import { ApiPromise, WsProvider } from "@polkadot/api";
+const ALICE = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY";
+const provider = new WsProvider("ws://localhost:8000");
+const api = await ApiPromise.create({ provider, noInitWarn: true });
+await provider.send("dev_setStorage", [{ System: { Account: [[[ALICE], { providers: 1, data: { free: "1000000000000000000000" } }]] } }]);
+const bal = (await api.query.system.account(ALICE)).toJSON();
+console.log("Alice balance:", JSON.stringify(bal).slice(0, 200));
+console.log("assets pallet present:", typeof api.tx.assets?.create === "function");
+console.log("staking pallet present:", typeof api.tx.staking?.bond === "function");
+console.log("identity pallet present:", typeof api.tx.identity?.setIdentity === "function");
+await api.disconnect();

@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]: ◆
+        - generic [ref=e6]: portaldot-mcp
+      - button "Connect Wallet" [ref=e8]
+    - main [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - heading "The first AI gateway for Portaldot" [level=1] [ref=e12]
+          - paragraph [ref=e13]: Ask in plain language — read chain state, sign transfers with your wallet.
+        - generic [ref=e14]:
+          - button "What's the latest Portaldot block?" [ref=e15]
+          - button "Check the balance of 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY" [ref=e16]
+          - button "Send 1 POT to 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty" [ref=e17]
+          - button "Show the tasks on the ledger" [ref=e18]
+    - generic [ref=e20]:
+      - textbox "Ask Portaldot…" [ref=e21]
+      - button "→" [disabled] [ref=e22]
+  - alert [ref=e23]

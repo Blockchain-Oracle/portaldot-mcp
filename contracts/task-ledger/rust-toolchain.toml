@@ -1,0 +1,9 @@
+# Toolchain window for cargo-contract 5.0.3 / ink! 5.1.1:
+#   >= 1.85.0  → edition2024 support (a transitive `home` dep requires it)
+#   < ~1.90    → before Rust turned `panic_immediate_abort` into a real panic
+#                strategy, which breaks ink! v5's build-std size optimization.
+# 1.85.0 is the lowest version satisfying both — maximal distance from the break.
+[toolchain]
+channel = "1.85.0"
+components = ["rust-src", "clippy"]
+targets = ["wasm32-unknown-unknown"]

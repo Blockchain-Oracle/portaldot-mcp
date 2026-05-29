@@ -2,8 +2,8 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai";
-import { useEffect, useRef, useState } from "react";
-import { ArrowUp, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowUp, Sparkles, Wallet, ShieldCheck } from "lucide-react";
 import { useWallet } from "@/lib/wallet";
 import { signAndSendTransfer } from "@/lib/polkadot";
 import { WalletPill } from "@/components/WalletPill";
@@ -26,7 +26,7 @@ import {
 } from "@/components/tools";
 
 const EXAMPLES = [
-  "Give me a full overview of 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+  "Give me a full overview of my account",
   "What's the Portaldot network status right now?",
   "Who are the active validators?",
   "Send 1 POT to 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
@@ -65,9 +65,23 @@ function hasError(output: unknown): output is { error: string } {
 }
 
 export function ChatApp() {
-  const { account } = useWallet();
+  const { account, connect, connecting, error: walletError } = useWallet();
+  // Keep the latest connected address available to the transport without
+  // recreating it — every chat request carries the user's wallet address.
+  const addressRef = useRef<string | null>(account?.address ?? null);
+  addressRef.current = account?.address ?? null;
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        prepareSendMessagesRequest: ({ messages, body }) => ({
+          body: { ...body, messages, walletAddress: addressRef.current },
+        }),
+      }),
+    [],
+  );
   const { messages, setMessages, sendMessage, addToolOutput, status } = useChat({
-    transport: new DefaultChatTransport({ api: "/api/chat" }),
+    transport,
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
   });
   const [input, setInput] = useState("");
@@ -81,7 +95,7 @@ export function ChatApp() {
 
   const send = (text: string) => {
     const t = text.trim();
-    if (!t) return;
+    if (!t || !account) return;
     setInput("");
     void sendMessage({ text: t });
   };
@@ -115,7 +129,7 @@ export function ChatApp() {
 
   return (
     <SidebarProvider className="h-dvh">
-      <AppSidebar onNewChat={newChat} onPrompt={send} disabled={status !== "ready"} />
+      <AppSidebar onNewChat={newChat} onPrompt={send} disabled={!account || status !== "ready"} />
       <SidebarInset className="flex min-h-0 flex-col bg-background">
         <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-2 border-b border-border bg-background/80 px-3 backdrop-blur">
           <div className="flex items-center gap-2 text-sm">
@@ -131,7 +145,35 @@ export function ChatApp() {
 
         <div className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-3xl space-y-4 px-4 py-6">
-            {empty && (
+            {!account ? (
+              <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/12 text-primary">
+                  <Wallet className="size-6" />
+                </div>
+                <div className="max-w-md">
+                  <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                    Connect your wallet to start
+                  </h1>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Portaldot reads your balances and signs transfers from <span className="text-foreground">your</span>{" "}
+                    connected account. Connect a Polkadot wallet (SubWallet or Talisman) to begin.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={connect}
+                  disabled={connecting}
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-[transform,filter] hover:-translate-y-px hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50"
+                >
+                  <Wallet className="size-4" />
+                  {connecting ? "Connecting…" : "Connect Wallet"}
+                </button>
+                {walletError && <p className="max-w-xs text-xs text-destructive">{walletError}</p>}
+                <p className="inline-flex items-center gap-1.5 text-xs text-fg-muted">
+                  <ShieldCheck className="size-3.5 text-primary" /> Keys never leave your device.
+                </p>
+              </div>
+            ) : empty ? (
               <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
                 <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/12 text-primary">
                   <Sparkles className="size-6" />
@@ -159,7 +201,7 @@ export function ChatApp() {
                   ))}
                 </div>
               </div>
-            )}
+            ) : null}
 
             {messages.map((m) => (
               <div key={m.id} className="space-y-2">
@@ -255,12 +297,13 @@ export function ChatApp() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Portaldot…"
-              className="flex-1 bg-transparent px-2 text-sm text-foreground outline-none placeholder:text-fg-muted"
+              disabled={!account}
+              placeholder={account ? "Ask Portaldot…" : "Connect your wallet to chat"}
+              className="flex-1 bg-transparent px-2 text-sm text-foreground outline-none placeholder:text-fg-muted disabled:cursor-not-allowed"
             />
             <button
               type="submit"
-              disabled={status !== "ready" || !input.trim()}
+              disabled={!account || status !== "ready" || !input.trim()}
               aria-label="Send"
               className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-[transform,filter] hover:-translate-y-px hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40 disabled:hover:translate-y-0"
             >

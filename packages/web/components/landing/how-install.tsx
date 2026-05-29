@@ -23,11 +23,11 @@ const steps = [
   },
 ];
 
-const installCode = `# build the workspace
-pnpm install && pnpm build
+const installCode = `# add the Portaldot MCP server to Claude Code — no clone, no build
+claude mcp add portaldot -- npx -y portaldot-mcp
 
-# add the MCP server to Claude Code (stdio)
-claude mcp add portaldot -- node /abs/path/packages/mcp/dist/index.js`;
+# or run it directly in any MCP client
+npx -y portaldot-mcp`;
 
 const envCode = `# web chat — set ANY one provider, it's auto-detected
 ANTHROPIC_API_KEY=sk-ant-...

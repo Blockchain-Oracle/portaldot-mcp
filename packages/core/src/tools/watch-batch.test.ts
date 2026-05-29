@@ -16,7 +16,10 @@ async function freeOf(address: string): Promise<bigint> {
   return BigInt((r.data as { free: string }).free);
 }
 
-describe("watch + batch (live devnet)", () => {
+// Local-node write test — opt in with PORTALDOT_DEV_TESTS=1 (node on :9944, Alice funded).
+const RUN = Boolean(process.env.PORTALDOT_DEV_TESTS);
+
+describe.skipIf(!RUN)("watch + batch (live devnet)", () => {
   beforeAll(() => {
     process.env.PORTALDOT_RPC_URL = "ws://127.0.0.1:9944";
     process.env.PORTALDOT_SEED_PHRASE = "//Alice";

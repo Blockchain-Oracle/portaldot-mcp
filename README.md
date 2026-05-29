@@ -29,10 +29,14 @@ All tools return **real chain data** — no mocks anywhere.
 ## Quickstart (MCP)
 
 ```bash
-# build
-pnpm install && pnpm build
+# add to Claude Code — published to npm, no clone or build needed
+claude mcp add portaldot -- npx -y portaldot-mcp
+```
 
-# add to Claude Code (stdio)
+Or build from source:
+
+```bash
+pnpm install && pnpm build
 claude mcp add portaldot -- node /absolute/path/to/packages/mcp/dist/index.js
 ```
 

@@ -4,8 +4,10 @@ import { disconnect } from "../chain/connection";
 
 // Real broadcast tests against the local dev node (pallet-assets present, Alice prefunded).
 const BOB = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty";
+// Local-node write test — opt in with PORTALDOT_DEV_TESTS=1 (node on :9944, Alice funded).
+const RUN = Boolean(process.env.PORTALDOT_DEV_TESTS);
 
-describe("token tools (live devnet, pallet-assets)", () => {
+describe.skipIf(!RUN)("token tools (live devnet, pallet-assets)", () => {
   let assetId = 0;
   beforeAll(() => {
     process.env.PORTALDOT_RPC_URL = "ws://127.0.0.1:9944";

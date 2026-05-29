@@ -33,12 +33,12 @@ interface Capability {
 }
 
 const capabilities: Capability[] = [
-  { icon: Wallet, label: "Balances", prompt: "Give me a full overview of 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY" },
+  { icon: Wallet, label: "Balances", prompt: "Give me a full overview of my account" },
   { icon: Activity, label: "Network", prompt: "What's the Portaldot network status right now?" },
   { icon: Blocks, label: "Blocks", prompt: "Show me the latest Portaldot block." },
   { icon: ShieldCheck, label: "Validators", prompt: "Who are the active validators?" },
   { icon: Coins, label: "Tokens", prompt: "List the tokens I own." },
-  { icon: BadgeCheck, label: "Identity", prompt: "Resolve the identity of 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY" },
+  { icon: BadgeCheck, label: "Identity", prompt: "Resolve my on-chain identity" },
   { icon: ArrowUpRight, label: "Transfers", prompt: "Send 1 POT to 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty" },
   { icon: ListChecks, label: "Tasks", prompt: "List my onchain tasks." },
 ];

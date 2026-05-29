@@ -1,23 +1,61 @@
 {
-  "name": "@portaldot-mcp/mcp",
+  "name": "portaldot-mcp",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
-  "description": "Portaldot MCP server — stdio transport for any MCP client (Claude Code, Cursor, Desktop).",
+  "description": "The first MCP server for Portaldot — 34 onchain tools (balances, transfers, tokens, staking, identity, contracts) for the Portaldot Substrate chain, over stdio for any MCP client (Claude Code, Cursor, Claude Desktop).",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "portaldot",
+    "polkadot",
+    "substrate",
+    "blockchain",
+    "web3",
+    "claude",
+    "ai-agent"
+  ],
+  "license": "MIT",
+  "author": "Blockchain-Oracle",
+  "homepage": "https://github.com/Blockchain-Oracle/portaldot-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Blockchain-Oracle/portaldot-mcp.git",
+    "directory": "packages/mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/Blockchain-Oracle/portaldot-mcp/issues"
+  },
   "bin": {
     "portaldot-mcp": "./dist/index.js"
   },
   "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "prepublishOnly": "tsup"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "@polkadot/api": "^16.5.6",
+    "@polkadot/api-contract": "^16.5.6",
+    "@polkadot/keyring": "^14.0.3",
+    "@polkadot/types": "^16.5.6",
+    "@polkadot/util": "^14.0.3",
+    "@polkadot/util-crypto": "^14.0.3",
+    "pino": "^10.3.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
     "@portaldot-mcp/core": "workspace:*"
   }
 }

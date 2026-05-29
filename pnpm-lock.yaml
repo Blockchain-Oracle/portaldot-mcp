@@ -68,6 +68,31 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
+      '@polkadot/api':
+        specifier: ^16.5.6
+        version: 16.5.6
+      '@polkadot/api-contract':
+        specifier: ^16.5.6
+        version: 16.5.6
+      '@polkadot/keyring':
+        specifier: ^14.0.3
+        version: 14.0.3(@polkadot/util-crypto@14.0.3(@polkadot/util@14.0.3))(@polkadot/util@14.0.3)
+      '@polkadot/types':
+        specifier: ^16.5.6
+        version: 16.5.6
+      '@polkadot/util':
+        specifier: ^14.0.3
+        version: 14.0.3
+      '@polkadot/util-crypto':
+        specifier: ^14.0.3
+        version: 14.0.3(@polkadot/util@14.0.3)
+      pino:
+        specifier: ^10.3.1
+        version: 10.3.1
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
       '@portaldot-mcp/core':
         specifier: workspace:*
         version: link:../core

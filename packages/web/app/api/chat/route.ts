@@ -59,11 +59,19 @@ function buildTools(): ToolSet {
 const SYSTEM = `You are the Portaldot agent. Portaldot is a Substrate chain; the token is POT (14 decimals, SS58 prefix 42).
 Use the tools to read chain state and to propose transactions. For transfers and task-ledger writes, call the tool — the user will review and sign in their wallet. Keep replies short; let the tool result cards show the detail. Never invent addresses, balances, or hashes.`;
 
+function systemFor(walletAddress?: string | null): string {
+  if (!walletAddress) return SYSTEM;
+  return `${SYSTEM}
+
+The user's connected wallet address is ${walletAddress}. Whenever they say "my", "me", "I", or ask for a balance, tokens, identity, staking, or account overview WITHOUT naming a specific address, use ${walletAddress}. Transfers are always sent FROM ${walletAddress} (the user signs in their own wallet) — only ask for the recipient and amount.`;
+}
+
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const { messages, walletAddress }: { messages: UIMessage[]; walletAddress?: string | null } =
+    await req.json();
   const result = streamText({
     model: resolveModel(),
-    system: SYSTEM,
+    system: systemFor(walletAddress),
     messages: await convertToModelMessages(messages),
     tools: buildTools(),
     stopWhen: stepCountIs(5),

@@ -10,6 +10,7 @@ import { createPortal } from 'react-dom';
 const links = [
 	{ label: 'Features', href: '/#features' },
 	{ label: 'How it works', href: '/#how' },
+	{ label: 'Docs', href: '/docs' },
 	{ label: 'Install', href: '/#install' },
 ];
 

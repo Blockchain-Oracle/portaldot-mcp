@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Wallet, MessageSquareText, CircleCheck } from "lucide-react";
+import { Wallet, MessageSquareText, CircleCheck, ArrowRight } from "lucide-react";
 import { CodeBlock, CodeBlockCode } from "@/components/ui/code-block";
+import { InstallCommand } from "@/components/install-command";
 import { SectionHeading } from "@/components/landing/features";
 
 const steps = [
@@ -22,12 +24,6 @@ const steps = [
     body: "Review the generated card, approve in your wallet, and watch the transfer finalize on-chain.",
   },
 ];
-
-const installCode = `# add the Portaldot MCP server to Claude Code — no clone, no build
-claude mcp add portaldot -- npx -y portaldot-mcp
-
-# or run it directly in any MCP client
-npx -y portaldot-mcp`;
 
 const envCode = `# web chat — set ANY one provider, it's auto-detected
 ANTHROPIC_API_KEY=sk-ant-...
@@ -79,13 +75,7 @@ export function Install() {
           subtitle="Claude Code, Cursor, Claude Desktop or the console. Or skip the client entirely and open the web app."
         />
         <div className="space-y-4">
-          <CodeBlock className="bg-card">
-            <div className="flex items-center justify-between border-b border-border px-4 py-2">
-              <span className="font-mono text-xs text-muted-foreground">terminal</span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-primary">mcp</span>
-            </div>
-            <CodeBlockCode code={installCode} language="bash" theme="github-dark" />
-          </CodeBlock>
+          <InstallCommand />
           <CodeBlock className="bg-card">
             <div className="flex items-center justify-between border-b border-border px-4 py-2">
               <span className="font-mono text-xs text-muted-foreground">.env</span>
@@ -93,6 +83,13 @@ export function Install() {
             </div>
             <CodeBlockCode code={envCode} language="bash" theme="github-dark" />
           </CodeBlock>
+          <Link
+            href="/docs"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-opacity hover:opacity-80"
+          >
+            Read the docs — all 34 tools
+            <ArrowRight className="size-4" />
+          </Link>
         </div>
       </div>
     </section>

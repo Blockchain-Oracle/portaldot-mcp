@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Rocket, Boxes } from "lucide-react";
+import { Rocket, Boxes, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/docs", label: "Getting started", icon: Rocket },
   { href: "/docs/tools", label: "Tool catalog", icon: Boxes },
+  { href: "/docs/skill", label: "Agent skill", icon: Sparkles },
 ];
 
 export function DocsNav() {

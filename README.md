@@ -42,6 +42,20 @@ claude mcp add portaldot -- node /absolute/path/to/packages/mcp/dist/index.js
 
 Then ask your agent: *"What's the latest Portaldot block?"*, *"Send 1 POT to 5Grw…"*, *"Create a task: ship the demo."*
 
+## Install as an Agent Skill
+
+A cross-client Agent Skill (`packages/skills/portaldot/SKILL.md`) teaches any agent *when* and *how* to use the tools — intent→tool table, parameter guide, and example workflows. Three ways to install:
+
+```bash
+# 1. Tell your agent (self-installs)
+#    "Read https://<your-deployment>/skill.md and follow the instructions to install Portaldot MCP."
+
+# 2. skills CLI
+pnpm dlx skills add github:Blockchain-Oracle/portaldot-mcp --skill portaldot
+
+# 3. Manual — copy SKILL.md into your client's skills dir (e.g. ~/.claude/skills/portaldot/)
+```
+
 Environment (`.env`):
 
 ```bash

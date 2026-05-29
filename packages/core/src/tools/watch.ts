@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Codec } from "@polkadot/types/types";
 import { defineTool } from "../lib/tool";
 import { getApi } from "../chain/connection";
 import { ok, err } from "../lib/result";
@@ -18,7 +19,15 @@ export const watchBalance = defineTool({
       const updates: Array<{ free: string; freePot: string }> = [];
       let initial: bigint | null = null;
 
-      const unsub = await api.query.system.account(address, (acct) => {
+      // @polkadot/api's generic storage entry resolves `(arg, cb)` to the one-shot
+      // Promise<Codec> overload (no chain augmentation in this project), so the
+      // subscription form is asserted here: callback yields a Codec, returns the unsub fn.
+      const subscribeAccount = api.query.system.account as unknown as (
+        addr: string,
+        cb: (acct: Codec) => void,
+      ) => Promise<() => void>;
+
+      const unsub = await subscribeAccount(address, (acct) => {
         const free = BigInt(
           (acct.toJSON() as { data?: { free?: string | number } }).data?.free ?? 0,
         );

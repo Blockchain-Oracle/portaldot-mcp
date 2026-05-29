@@ -24,6 +24,7 @@ contracts/**/target/
 # test / coverage
 coverage/
 .vitest/
+.playwright-mcp/
 
 # editor / os
 .DS_Store

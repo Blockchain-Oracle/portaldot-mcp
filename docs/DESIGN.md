@@ -1,84 +1,78 @@
-# DESIGN.md — portaldot-mcp web app
+# DESIGN.md — portaldot-mcp web
 
-The generative-UI chat surface. Every visual property must resolve to a token here.
+Two surfaces, one product, one token set:
+- **`/` Landing** — marketing surface. Premium author-built sections (premium-ui skill). Sells "the first AI gateway for Portaldot."
+- **`/app` Chat** — the generative-UI chat. Plain-language → AI proposes → tool-result card → wallet sign → confirmed card.
 
-## Anchor
-- **Primary:** aibtcdev (app.aibtc.dev) — exact category: AI chat + blockchain MCP tools + browser wallet, with tool-result cards. The interaction model (chat input → AI proposes → card with sign button → confirmed card) is lifted from here.
-- **Secondary:** Linear (linear.app) — input bar, ⌘↵ to send, keyboard feel, terse copy. Vercel ai-chatbot (open, Next + AI SDK v5) — chat-shell structure reference only.
-- **Tier:** Linear / Trigger.dev refined-dark. Restrained single accent, mono for all on-chain data, no decorative gradients.
+Every visual property must resolve to a token below. No raw hex/`zinc-950`/inline styles in components.
 
-## Palette (concrete hex — no "zinc-950"/"dark")
-- Background: `#09090B`
-- Surface (cards): `#131316`
-- Surface-2 (input, elevated): `#1A1A1F`
-- Border: `#26262C`
-- Border-hover: `#34343C`
-- Text primary: `#EDEDEF`
-- Text secondary: `#9A9AA5`
-- Text muted: `#6B6B76`
-- Accent (Portaldot violet): `#7C5CFC` — used ONLY for the primary action (Sign & Send / Connect), active states, and the brand mark
-- Accent-soft (tint bg): `rgba(124,92,252,0.12)`
-- Success: `#22C55E` (confirmed tx, completed task)
-- Pending: `#F59E0B` (in-flight tx)
-- Destructive: `#EF4444` (errors, reverts)
+## Anchor / direction
+- **Tier:** Linear / Trigger.dev / Prisma refined-dark dev-tool. Restrained, technical, premium — not playful, not corporate-SaaS.
+- **Landing hero:** cinematic with a **single tasteful violet radial glow** (prisma-hero). NOT a linear `from-purple to-blue` slop gradient, NOT gradient text on headings.
+- **App:** aibtcdev interaction model (chat → card-with-sign → confirmed). Spotlight-on-hover surfaces for cards.
+- **Identity beat:** Portaldot violet on near-black, mono for every on-chain datum, real lucide icons (never emoji/unicode glyphs).
 
-## Typography
-- Display: **Geist Sans** 600 — H1/H2 and the brand mark only
-- Body: **Geist Sans** 400/500 — all body copy
-- Mono: **Geist Mono** 400/500 — every address, hash, POT amount, block number
-- Scale (px): 12 / 13 / 14 / 16 / 20 / 28
+## Palette (hex + OKLCH — neutrals carry a subtle violet undertone, never pure gray)
+| Role | Hex | OKLCH | Use |
+|---|---|---|---|
+| bg | `#08080C` | `oklch(0.145 0.012 285)` | page background |
+| surface | `#111017` | `oklch(0.185 0.014 285)` | cards, header |
+| surface-2 | `#18171F` | `oklch(0.225 0.015 285)` | input, elevated, hover bg |
+| border | `#242230` | `oklch(0.285 0.018 285)` | hairlines |
+| border-hover | `#332F44` | `oklch(0.355 0.024 286)` | hover/focus hairlines |
+| fg | `#F4F3F7` | `oklch(0.965 0.004 285)` | primary text |
+| fg-secondary | `#A7A4B5` | `oklch(0.725 0.013 286)` | labels, secondary |
+| fg-muted | `#6E6B7E` | `oklch(0.555 0.016 286)` | muted, placeholders |
+| accent | `#7C5CFC` | `oklch(0.625 0.205 285)` | **brand + primary action ONLY** |
+| accent-hover | `#8F73FF` | `oklch(0.68 0.19 285)` | accent hover |
+| accent-soft | `rgba(124,92,252,0.12)` | — | tint bg, active pill, hero glow |
+| success | `#34D399` | `oklch(0.78 0.16 165)` | confirmed tx, completed task |
+| pending | `#FBBF24` | `oklch(0.83 0.16 85)` | in-flight tx |
+| destructive | `#F87171` | `oklch(0.71 0.18 22)` | errors, reverts |
 
-## Spacing
-- Base unit: 4px
-- Scale: 4, 8, 12, 16, 20, 24, 32, 48
+**Accent has ONE semantic role: brand mark + primary action.** State color comes from success/pending/destructive. Never paint everything violet (slop tell).
 
-## Radius
-- Cards: 12px (`rounded-xl`)
-- Inputs: 10px
-- Pills (wallet status, status badges): full
+### shadcn semantic-var mapping (set in `:root` AND `.dark`)
+`--background`→bg · `--card`/`--popover`→surface · `--secondary`/`--muted`/`--input`→surface-2 · `--border`→border · `--ring`→accent · `--foreground`/`--card-foreground`→fg · `--muted-foreground`→fg-secondary · `--primary`→accent · `--primary-foreground`→`#0B0A10` · `--accent`→accent-soft · `--destructive`→destructive · project aliases (`--color-bg`, `--color-surface`, `--color-surface-2`, `--color-border`, `--color-border-hover`, `--color-fg`, `--color-fg-secondary`, `--color-fg-muted`, `--color-accent`, `--color-accent-soft`, `--color-success`, `--color-pending`, `--color-destructive`) point at the same values so old + new components share one look.
 
-## Motion
-- Card hover: `border-color → #34343C`, 150ms ease (no lift on data cards)
-- Button hover: `translate-y-[-1px]` + slight brightness, 150ms
-- Tool-card entrance: fade + 4px slide-up, 200ms ease-out
-- Streaming AI text: native `useChat` token streaming
-- Loading tool call: skeleton card with subtle shimmer (`animate-pulse`), replaced in place (no layout shift)
-- Tx pending: spinner inside the "Sign & Send" button; card border → pending amber
+## Typography (Geist — mandated by CLAUDE.md; non-Inter, compliant)
+- Display: **Geist Sans** 600 — H1/H2, brand mark. Tracking `-0.02em` on H1.
+- Body: **Geist Sans** 400/500.
+- Mono: **Geist Mono** 400/500 — **every** address, hash, POT amount, block number, asset id.
+- Scale (px): 12 / 13 / 14 / 16 / 20 / 28 / 40 / 56 (40/56 landing only).
 
-## Layout
-```
-┌───────────────────────────────────────────────┐
-│ ◆ portaldot-mcp        [● 5F3sA…utQY · 42.0 POT]│  sticky header, brand left, wallet pill right
-├───────────────────────────────────────────────┤
-│  (empty: centered welcome + 4 example prompts)  │
-│  user msg (right)                               │
-│  AI text (left, streaming) + tool card(s)       │  scrollable message list, max-w-3xl centered
-├───────────────────────────────────────────────┤
-│ [ Ask Portaldot…                       ] [→]   │  sticky input bar, ⌘↵ send
-└───────────────────────────────────────────────┘
-```
-Single route `/`. No sidebar, no settings page.
+## Spacing / radius
+- Base 4px. Scale: 4, 8, 12, 16, 20, 24, 32, 48, 64, 96.
+- Radius: cards `14px` (`--radius`), inputs `10px`, pills/badges full, landing feature tiles `18px`.
 
-## Tool cards (generative UI)
-- **BalanceCard** — address (mono, truncated `5F3sA…utQY`), Free / Reserved / Total rows, Total emphasized.
-- **TransferCard** — two states: (1) *preview*: to / amount / fee est + `Sign & Send` (accent) + `Cancel`; (2) *confirmed*: ✓ success border, tx hash (mono), block, explorer link.
-- **BlockInfoCard** — block # (mono), hash (mono truncated), human timestamp, extrinsic count.
-- **TaskCard / TaskListCard** — task id, description, status chip (⏳ pending amber / ✓ done green), tx hash on create.
-- All cards: `bg #131316`, `border #26262C`, `rounded-xl`, `p-4`, header row with small icon + label (text-secondary, 13px).
+## Icons
+- **lucide-react only.** Kill all emoji/unicode glyphs (◆ ▦ ≈ ☰ 🪙 ↗ ◷ ✓ ⏳ ⚠ ✕). Map: balance→`Wallet`, block→`Box`/`Blocks`, fee→`Receipt`, tasks→`ListChecks`, token→`Coins`, transfer→`ArrowUpRight`, identity→`BadgeCheck`, validators→`ShieldCheck`, network→`Activity`, error→`TriangleAlert`, success→`CircleCheck`, pending→`Loader`, wallet-connected→`CircleDot`, generic→`Sparkles`.
 
-## Interaction states (per card — all required)
-- Hover: border → `#34343C`.
-- Focus (buttons/input): 2px accent focus ring `#7C5CFC`, never `outline:none` alone.
-- Active: button brightness down, 1px press.
-- Disabled: 40% opacity + `cursor-not-allowed` (Sign button while signing).
-- Empty: welcome screen with 4 example prompts.
-- Loading: skeleton card (shimmer) until tool resolves.
-- Error: destructive-bordered card with the tool's error message (mono for any hash/address in it).
+## Motion (consistent token, not bolted on)
+- Easing: `cubic-bezier(0.22,1,0.36,1)` (premium "out"). Durations: 150ms micro, 220ms card/reveal, 420ms hero.
+- Card hover: border→border-hover + spotlight follows cursor (150ms). No lift on data cards.
+- Button hover: `-translate-y-px` + brightness, 150ms. Active: 1px press.
+- Tool-card entrance: fade + 6px slide-up, 220ms.
+- Loading: shimmer skeleton (not bare pulse), replaced in place — no layout shift, no blank flash.
+- Tx pending: spinner in "Sign & Send"; card border → pending.
+- Landing: hero glow breathes; section reveals on mount/in-view — **must render visible un-scrolled** (no `whileInView once` opacity-0 trap above the fold).
 
-## Banned (hard)
-- `bg-gradient-to-*` of any purple/violet/blue/pink — NO decorative gradients.
-- `rounded-full` on cards (only pills/badges).
-- `font-sans`/Inter for addresses, hashes, amounts — those are ALWAYS mono.
-- `text-gray-600`-on-light as body — this is a dark app; use the tokens above.
-- Mock data: "John Doe", "user@example.com", picsum/ui-avatars, "0x000…".
-- Centered gradient hero. Three identical undifferentiated cards.
+## Surfaces / cohesion
+- All installed premium components reskinned to these tokens — kill foreign radii/shadows/accents/fonts. Every property → token. No Frankenstein.
+- Tailwind v4: custom colors/keyframes as CSS vars + `@theme`/`@keyframes` in `globals.css`. Port any v3-ism (`theme(...)`, `theme.extend`, invented utilities) shipped by community components.
+
+## Routing
+- `/` landing · `/app` chat. `/app` link is the landing's primary CTA ("Open the app" / "Try it").
+
+## Interaction states (every interactive element — all required)
+Hover · focus (2px accent ring, never bare `outline:none`) · active (press) · disabled (40% + `cursor-not-allowed`) · empty · loading (shimmer) · error (destructive-bordered card, mono for any hash/address).
+
+## Banned (hard — project anti-slop floor, extends premium-ui blocklist)
+- `bg-gradient-to-*` of purple/violet/blue/pink as decoration; gradient **text** on headings.
+- Emoji/unicode as icons — lucide only.
+- `rounded-full` on cards (pills/badges only).
+- `font-sans`/Inter for addresses/hashes/amounts — always mono.
+- Untouched shadcn zinc default; single-accent-everything.
+- Mock data: "John Doe", "user@example.com", picsum/ui-avatars/randomuser, "0x000…", "Lorem ipsum".
+- Three identical undifferentiated cards; every section same vertical rhythm.
+- lucide brand glyphs removed from recent versions (`Github`/`Twitter`/etc.) — inline SVG instead.

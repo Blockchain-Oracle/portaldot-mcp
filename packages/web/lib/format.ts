@@ -25,5 +25,6 @@ export function formatPot(raw: bigint): string {
 }
 
 export function truncateAddress(addr: string, head = 5, tail = 5): string {
+  if (!addr) return "—";
   return addr.length <= head + tail + 1 ? addr : `${addr.slice(0, head)}…${addr.slice(-tail)}`;
 }

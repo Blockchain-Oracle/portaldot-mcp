@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { existsSync } from "node:fs";
 import {
   decodeContractMetadataTool,
   readContractTool,
@@ -11,6 +12,8 @@ const META = `${process.cwd()}/../../contracts/task-ledger/target/ink/task_ledge
 const ADDR = process.env.TASK_LEDGER_CONTRACT_ADDRESS ?? "";
 const ALICE = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY";
 const live = Boolean(ADDR);
+// The ABI is a `cargo contract build` artifact (gitignored target/) — absent in CI.
+const hasMeta = existsSync(META);
 
 describe("ink! contract toolkit", () => {
   beforeAll(() => {
@@ -19,7 +22,7 @@ describe("ink! contract toolkit", () => {
   });
   afterAll(disconnect);
 
-  it("decodes the Task Ledger ABI (no chain access)", async () => {
+  it.skipIf(!hasMeta)("decodes the Task Ledger ABI (no chain access)", async () => {
     const res = await decodeContractMetadataTool.handler({ metadataPath: META });
     if (!res.ok) throw new Error(res.error);
     const d = res.data as {

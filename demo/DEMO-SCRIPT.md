@@ -6,15 +6,15 @@ Spoken pitch. ~90 seconds. Read it out loud.
 
 ## Hook
 
-Until today, there was no AI that could actually use Portaldot. We built one. You just talk to it.
+Until today, Portaldot had no AI tool. Ethereum has one. Solana has one. We built one for Portaldot. You just talk to it.
 
 ## The problem
 
-You own POT. Portaldot is a real chain — send, stake, vote, the whole stack. But to actually do any of it today, you have to be a developer. Polkadot.js Apps, pallets, JSON forms, forty events to find the one you wanted. Most people give up and just hold the token.
+Portaldot is a real chain — send POT, stake, vote for validators, all the good stuff. But to actually do any of it, you had to be a developer. Polkadot.js Apps, pallets, JSON forms, forty events to read after every transaction. If you weren't a developer, you held your tokens and that was it.
 
 ## The solution
 
-You just say what you want. "Send one POT to my friend." Done. "What's my balance?" Done. You ask in plain English, the AI picks the right tool, the real chain answers. When money moves, you sign in your wallet. We never touch your keys.
+We fixed that. You just say what you want. "Send one POT to my friend." Done. "What's my balance?" Done. You ask in plain English, the AI picks the right tool, the real chain answers. When money moves, you sign in your wallet. We never touch your keys.
 
 ## The demo
 

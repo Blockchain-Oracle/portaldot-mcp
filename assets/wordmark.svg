@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 256" width="880" height="256" role="img" aria-label="portaldot-mcp wordmark">
+  <rect width="880" height="256" fill="#0A0E1A"/>
+  <g>
+    <circle cx="128" cy="128" r="88" fill="none" stroke="#F4E9DC" stroke-width="10"/>
+    <circle cx="190" cy="66" r="20" fill="#F4E9DC"/>
+  </g>
+  <text x="272" y="150" font-family="ui-monospace, 'SF Mono', 'Geist Mono', 'JetBrains Mono', Menlo, Consolas, monospace" font-size="64" font-weight="500" fill="#F4E9DC" letter-spacing="-1.5">portaldot-mcp</text>
+</svg>

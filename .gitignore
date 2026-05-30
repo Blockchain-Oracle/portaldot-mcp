@@ -32,6 +32,16 @@ coverage/
 .vscode/*
 !.vscode/extensions.json
 
-# vercel
+# vercel + local dev node
 .vercel/
 .devnet/
+
+# claude code — keep checked-in scripts/hooks/settings; ignore session-local cruft
+.claude/plans/
+.claude/state/
+.claude/cache/
+.claude/logs/
+
+# raw screenshots / scratch work (committed assets live in assets/)
+*.local.png
+scratch/

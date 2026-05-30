@@ -6,7 +6,7 @@ The first MCP server for **Portaldot** (Substrate L0, token POT, ss58:42, 14 dec
 - **`packages/core`** — the shared `@polkadot/api` brain (tools, wallet, contract, format). No `next`, no MCP SDK.
 - **`packages/skills/portaldot`** — one-line cross-client install. **`contracts/task-ledger`** — ink! v5 (the POT-gas deploy gate).
 
-Canonical architecture: **`docs/architecture-decisions.md`**. Research: `research/portaldot-online-s1/CONTEXT.md`.
+Canonical architecture: **`docs/architecture-decisions.md`**.
 
 ## Commands
 - `pnpm dev:mcp` — run MCP server (tsx watch, stdio)
@@ -38,7 +38,7 @@ Canonical architecture: **`docs/architecture-decisions.md`**. Research: `researc
 
 ## Process
 - **Every tool ships with: impl (`core`) + a REAL end-to-end test (live chain, no mocks) + a generative-UI card (`web`). No tool is "done" without all three.**
-- Spec before code: stories in `docs/stories/`. Loop on green-light, not vibes.
+- Loop on green-light, not vibes.
 - Frontend: pull a real anchor (sahil-ui-mining) before writing UI. Diff against `screenshots/anchor/`.
 - Before "done": fresh-context cross-review. 3 repeated errors → stop and reassess.
 - No deadline-driven scope cuts. Build the best version.

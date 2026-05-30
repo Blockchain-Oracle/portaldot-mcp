@@ -45,3 +45,9 @@ coverage/
 # raw screenshots / scratch work (committed assets live in assets/)
 *.local.png
 scratch/
+
+# AI production prompts — internal, don't ship to the public repo
+*_PROMPT.md
+*_PROMPTS.md
+*_BRIEF.md
+*.prompt.md

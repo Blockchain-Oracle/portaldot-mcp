@@ -9,6 +9,8 @@ The first MCP server for [Portaldot](https://www.portaldot.io) — a Substrate L
 
 > Portaldot Mini Hackathon Online S1 · Track 4 (AI-Powered Onchain Workflows)
 
+![To do anything on Portaldot, you had to be a developer — pallets, JSON forms, forty events to read after every transaction, all locked behind Polkadot.js. portaldot-mcp removes that wall.](./assets/pitch-01-the-problem.png)
+
 ## Two surfaces, one core
 
 - `packages/mcp` — the MCP server. Installs into any MCP client (Claude Code, Cursor, Claude Desktop, console). Headless signing via an auto-generated wallet. How an AI agent transacts on Portaldot.

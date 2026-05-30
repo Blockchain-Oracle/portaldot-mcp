@@ -115,7 +115,6 @@ export function ChatApp() {
     send(incoming);
     // Strip ?prompt= so reload doesn't refire
     router.replace("/app", { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, searchParams]);
 
   function newChat() {

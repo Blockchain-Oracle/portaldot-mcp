@@ -192,7 +192,7 @@ export function BalanceCard({ data }: { data: Record<string, unknown> }) {
 
   return (
     <ReceiptCard toolName="portaldot_get_balance" tone="default">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
           <div className="mb-3 flex items-center gap-2">
             <Identicon address={address} size={28} />
@@ -207,7 +207,7 @@ export function BalanceCard({ data }: { data: Record<string, unknown> }) {
             </button>
           </div>
           <div className="leading-none">
-            <Display className="text-[44px]">{planckToPot(ramped)}</Display>{" "}
+            <Display className="text-[34px] sm:text-[44px]">{planckToPot(ramped)}</Display>{" "}
             <span className="font-mono text-sm text-fg-muted">POT</span>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-x-4 rounded-lg border border-border bg-surface-2/40 px-3 py-2">
@@ -215,7 +215,11 @@ export function BalanceCard({ data }: { data: Record<string, unknown> }) {
             <Row k="Reserved" v={<Mono>{planckToPot(reserved)}</Mono>} />
           </div>
         </div>
-        {address && <AddressQR value={address} size={84} caption="scan to send" />}
+        {address && (
+          <div className="self-start sm:self-auto">
+            <AddressQR value={address} size={84} caption="scan to send" />
+          </div>
+        )}
       </div>
     </ReceiptCard>
   );
@@ -477,31 +481,32 @@ export function TransferCard({
       }
     >
       <div className="space-y-4">
-        {/* From → To */}
-        <div className="space-y-1.5">
-          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">from</span>
-            <span className="inline-flex items-center gap-1.5">
-              {from && <Identicon address={from} size={16} />}
-              <CopyChip value={from} />
-            </span>
-            <span />
-          </div>
-          <div className="flex justify-center text-fg-muted">
-            <ArrowDown className="size-3.5" />
-          </div>
-          <div className="grid grid-cols-[auto_1fr_auto] items-start gap-2">
-            <span className="pt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">to</span>
-            <span className="inline-flex items-center gap-1.5 pt-1">
-              <Identicon address={input.to} size={16} />
-              <CopyChip value={input.to} />
-            </span>
-            {!confirmed && input.to && (
-              <span className="row-span-2 self-start">
-                <AddressQR value={input.to} size={56} />
+        {/* From → To  (QR floats right on sm+, drops below on mobile) */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">from</span>
+              <span className="inline-flex items-center gap-1.5">
+                {from && <Identicon address={from} size={16} />}
+                <CopyChip value={from} />
               </span>
-            )}
+            </div>
+            <div className="pl-1 text-fg-muted">
+              <ArrowDown className="size-3.5" />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">to</span>
+              <span className="inline-flex items-center gap-1.5">
+                <Identicon address={input.to} size={16} />
+                <CopyChip value={input.to} />
+              </span>
+            </div>
           </div>
+          {!confirmed && input.to && (
+            <div className="self-start sm:self-center">
+              <AddressQR value={input.to} size={56} />
+            </div>
+          )}
         </div>
 
         {/* Amount */}

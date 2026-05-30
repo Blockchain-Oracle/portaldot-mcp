@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 const SUBSCAN = "https://portaldot.subscan.io/account/";
 
 export function WalletPill() {
-  const { account, connect, disconnect, connecting, error } = useWallet();
+  const { account, openPicker, disconnect, connecting } = useWallet();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
   const [expanded, setExpanded] = React.useState(false);
@@ -27,17 +27,14 @@ export function WalletPill() {
 
   if (!account) {
     return (
-      <div className="flex flex-col items-end gap-1">
-        <button
-          type="button"
-          onClick={connect}
-          disabled={connecting}
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground shadow-[0_10px_40px_-12px_oklch(0.66_0.22_288_/_70%)] transition-[transform,filter] hover:-translate-y-px hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50"
-        >
-          {connecting ? "Connecting…" : "Connect wallet"}
-        </button>
-        {error && <span className="max-w-[220px] text-right text-xs text-destructive">{error}</span>}
-      </div>
+      <button
+        type="button"
+        onClick={openPicker}
+        disabled={connecting}
+        className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground shadow-[0_10px_40px_-12px_oklch(0.66_0.22_288_/_70%)] transition-[transform,filter] hover:-translate-y-px hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50"
+      >
+        {connecting ? "Connecting…" : "Connect wallet"}
+      </button>
     );
   }
 
@@ -62,8 +59,9 @@ export function WalletPill() {
         <Identicon address={account.address} size={26} halo />
         <span
           className={cn(
-            "font-mono text-foreground tabular-nums transition-[max-width,opacity] duration-300",
-            expanded ? "max-w-[420px]" : "max-w-[120px]",
+            "truncate font-mono text-foreground tabular-nums transition-[max-width,opacity] duration-300",
+            // never expand past viewport on small screens; touch doesn't hover anyway
+            expanded ? "max-w-[min(60vw,420px)]" : "max-w-[110px]",
           )}
           title={account.address}
         >

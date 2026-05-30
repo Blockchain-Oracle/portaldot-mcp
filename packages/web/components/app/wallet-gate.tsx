@@ -12,7 +12,7 @@ import { BlockHeightTicker } from "@/components/landing/block-height-ticker";
   identity-card metaphor — a single floating credential the user inserts.
 */
 export function WalletGate() {
-  const { connect, connecting, error } = useWallet();
+  const { openPicker, connecting } = useWallet();
 
   return (
     <div className="flex min-h-[68vh] flex-col items-center justify-center px-4">
@@ -76,14 +76,13 @@ export function WalletGate() {
             <div className="mt-7 flex flex-col items-center gap-3">
               <button
                 type="button"
-                onClick={connect}
+                onClick={openPicker}
                 disabled={connecting}
                 className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-[0_18px_60px_-12px_oklch(0.66_0.22_288_/_70%)] transition-[transform,filter] hover:-translate-y-px hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50"
               >
                 <Wallet className="size-4" />
                 {connecting ? "Connecting…" : "Connect wallet"}
               </button>
-              {error && <p className="max-w-xs text-center text-xs text-destructive">{error}</p>}
               <p className="inline-flex items-center gap-1.5 text-xs text-fg-muted">
                 <ShieldCheck className="size-3.5 text-primary" /> Keys never leave your device.
               </p>

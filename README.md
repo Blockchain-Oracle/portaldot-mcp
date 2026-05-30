@@ -2,6 +2,8 @@
 
 **The first MCP server for [Portaldot](https://www.portaldot.io)** — a Substrate Layer-0 chain (token POT, ss58:42, 14 decimals). It lets any AI agent read and transact on Portaldot in natural language, and ships a generative-UI web app for people who don't run an MCP client.
 
+**Live app:** [portaldot-mcp.vercel.app](https://portaldot-mcp.vercel.app) · **npm:** [`portaldot-mcp`](https://www.npmjs.com/package/portaldot-mcp) · **Repo:** [Blockchain-Oracle/portaldot-mcp](https://github.com/Blockchain-Oracle/portaldot-mcp)
+
 > Portaldot Mini Hackathon Online S1 · Track 4 (AI-Powered Onchain Workflows)
 
 ## Two surfaces, one core

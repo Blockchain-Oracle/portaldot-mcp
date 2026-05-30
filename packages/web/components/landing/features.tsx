@@ -1,110 +1,136 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  Boxes,
-  Wallet,
-  LayoutDashboard,
-  Activity,
-  BrainCircuit,
-  FileCode2,
-  type LucideIcon,
-} from "lucide-react";
-import { GlowCard } from "@/components/ui/spotlight-card";
+import { cn } from "@/lib/utils";
+
+/*
+  Features are rendered as a row of *capability spec receipts*. Each one
+  reads like a printed datasheet: meta-strip with a tag, headline in the
+  display font, a one-line subtitle in fg-secondary, perforation, body.
+  The 2-col-span cards get an ASCII dot-matrix pattern filling the right
+  edge, so the larger surface area never reads as wasted white space.
+*/
 
 interface Feature {
-  icon: LucideIcon;
+  tag: string;
   title: string;
   description: string;
   className?: string;
-  meta?: string;
+  /** Render the dot-matrix pattern fill (used on the wide tiles). */
+  matrix?: boolean;
 }
 
 const features: Feature[] = [
   {
-    icon: Boxes,
-    title: "34 onchain tools",
+    tag: "SCHEMA · 34 TOOLS",
+    title: "One tool per capability.",
     description:
-      "Balances, blocks, fees, validators, staking, identity, tokens, proxies, bounties, transfers and batch sends — one tool per capability, every one schema-typed.",
-    meta: "base + tier 1–4",
+      "Balances, blocks, fees, validators, staking, identity, tokens, proxies, bounties, transfers, batch sends — every one schema-typed, every one issued through a real chain call.",
     className: "md:col-span-2",
+    matrix: true,
   },
   {
-    icon: Wallet,
-    title: "Your keys, your signature",
+    tag: "NON-CUSTODIAL",
+    title: "Your keys. Your signature.",
     description:
       "Writes are signed in the browser with @polkadot/extension-dapp. The server proposes; your wallet approves. Seeds never touch a backend.",
   },
   {
-    icon: LayoutDashboard,
-    title: "Generative UI cards",
+    tag: "GENERATIVE UI",
+    title: "Receipts, not JSON walls.",
     description:
-      "Every tool result streams into a typed React card — balances, blocks, tokens, a sign-and-send transfer flow — not a wall of JSON.",
+      "Every tool result streams into a typed React card — balances, blocks, tokens, a sign-and-send transfer flow with a PAID stamp on finalization.",
   },
   {
-    icon: Activity,
-    title: "Real chain, no mocks",
+    tag: "FAIL LOUDLY",
+    title: "Real chain. No mocks.",
     description:
-      "Every read hits Portaldot over @polkadot/api. No Math.random() placeholders — real state or a loud failure.",
+      "Every read hits Portaldot over @polkadot/api. No Math.random() placeholders, no `chain_info` stubs — real state or a loud failure.",
   },
   {
-    icon: BrainCircuit,
-    title: "Bring any model",
-    description: "Anthropic, OpenAI, xAI and Google — swap the LLM with one env var.",
+    tag: "MODEL-AGNOSTIC",
+    title: "Bring any model.",
+    description: "Anthropic, OpenAI, xAI and Google — swap the LLM with one env var. Same MCP, same cards.",
   },
   {
-    icon: FileCode2,
-    title: "ink! Task Ledger",
-    description: "A real ink! v5 contract toolkit — create and read onchain tasks, POT-gas deploy gate included.",
+    tag: "INK! v5",
+    title: "ink! Task Ledger.",
+    description:
+      "A real ink! v5 contract toolkit — create and read on-chain tasks, POT-gas deploy gate included. The chain is gated by the token, the way Substrate was meant to.",
     className: "md:col-span-2",
+    matrix: true,
   },
 ];
 
 export function Features() {
   return (
-    <section id="features" className="px-4 py-20 sm:py-28">
+    <section id="features" className="relative px-4 py-20 sm:py-28">
       <div className="mx-auto max-w-5xl">
         <SectionHeading
-          eyebrow="What it does"
-          title="One MCP server. The whole chain."
+          eyebrow="WHAT IT DOES"
+          title={<>One MCP server. The <em className="font-normal italic text-telemetry">whole chain</em>.</>}
           subtitle="Read state, mint tokens, sign transfers — described in plain language, executed against the real Portaldot runtime."
         />
 
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
+        <div className="mt-12 grid gap-3 md:grid-cols-3">
           {features.map((f, i) => (
             <motion.div
               key={f.title}
               initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.45, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
-              className={f.className}
+              transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+              className={cn("relative", f.className)}
             >
-              <GlowCard
-                glowColor="purple"
-                customSize
-                className="h-full min-h-[188px] w-full !rounded-2xl border-border bg-card"
-              >
-                <div className="flex h-full flex-col">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-primary/12 text-primary">
-                    <f.icon className="size-[18px]" />
-                  </div>
-                  <h3 className="mt-4 flex items-center gap-2 font-medium tracking-tight text-foreground">
-                    {f.title}
-                    {f.meta && (
-                      <span className="rounded-full border border-border bg-secondary px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
-                        {f.meta}
-                      </span>
-                    )}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.description}</p>
-                </div>
-              </GlowCard>
+              <FeatureReceipt feature={f} />
             </motion.div>
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function FeatureReceipt({ feature }: { feature: Feature }) {
+  return (
+    <article className="group relative h-full overflow-hidden rounded-2xl bg-card p-1 ring-1 ring-border-strong/60 transition-shadow hover:shadow-[0_24px_60px_-30px_oklch(0_0_0_/_70%)]">
+      <div className="absolute -top-12 -right-12 size-40 rounded-full opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-30"
+        aria-hidden
+        style={{ background: "conic-gradient(from 38deg, var(--primary), transparent 40%)" }}
+      />
+      <div className="relative h-full rounded-[calc(var(--radius)*1.5)] border border-border bg-card receipt-watermark">
+        <div className="flex items-center justify-between gap-3 px-4 py-2 text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted">
+          <span className="inline-flex items-center gap-2 truncate">
+            <span aria-hidden className="size-1.5 rounded-full bg-telemetry glow-telemetry" />
+            <span className="truncate">{feature.tag}</span>
+          </span>
+          <span className="shrink-0">SPEC</span>
+        </div>
+        <div className="perforation" />
+        <div className="relative flex h-full flex-col px-4 pb-4 pt-3">
+          <h3
+            className="text-[20px] leading-tight tracking-tight text-foreground"
+            style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}
+          >
+            {feature.title}
+          </h3>
+          <p className="mt-2 text-[14px] leading-relaxed text-fg-secondary">{feature.description}</p>
+          {feature.matrix && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute right-3 top-12 size-32 opacity-30"
+              style={{
+                background:
+                  "radial-gradient(circle at center, var(--telemetry) 0.6px, transparent 0.8px)",
+                backgroundSize: "8px 8px",
+                maskImage:
+                  "radial-gradient(closest-side, black 50%, transparent 75%)",
+              }}
+            />
+          )}
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -114,7 +140,7 @@ export function SectionHeading({
   subtitle,
 }: {
   eyebrow: string;
-  title: string;
+  title: React.ReactNode;
   subtitle?: string;
 }) {
   return (
@@ -125,9 +151,17 @@ export function SectionHeading({
       transition={{ duration: 0.5 }}
       className="max-w-2xl"
     >
-      <span className="font-mono text-xs uppercase tracking-widest text-primary">{eyebrow}</span>
-      <h2 className="mt-3 font-semibold tracking-[-0.02em] text-foreground text-3xl sm:text-4xl">{title}</h2>
-      {subtitle && <p className="mt-3 text-base text-muted-foreground">{subtitle}</p>}
+      <span className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-telemetry">
+        <span aria-hidden className="size-1 rounded-full bg-telemetry glow-telemetry" />
+        {eyebrow}
+      </span>
+      <h2
+        className="mt-3 text-foreground text-[34px] leading-tight tracking-tight sm:text-[44px]"
+        style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}
+      >
+        {title}
+      </h2>
+      {subtitle && <p className="mt-3 text-[15px] leading-relaxed text-fg-secondary">{subtitle}</p>}
     </motion.div>
   );
 }

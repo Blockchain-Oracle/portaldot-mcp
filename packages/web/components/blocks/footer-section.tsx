@@ -1,8 +1,7 @@
 "use client";
-import React from "react";
-import type { ComponentProps, ReactNode } from "react";
+
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
+import { useChainPulse } from "@/lib/chain-pulse";
 
 interface FooterLink {
   title: string;
@@ -10,36 +9,11 @@ interface FooterLink {
   external?: boolean;
 }
 
-interface FooterColumn {
-  label: string;
-  links: FooterLink[];
-}
-
-const footerColumns: FooterColumn[] = [
-  {
-    label: "Product",
-    links: [
-      { title: "Features", href: "/#features" },
-      { title: "How it works", href: "/#how" },
-      { title: "Open the app", href: "/app" },
-    ],
-  },
-  {
-    label: "Developers",
-    links: [
-      { title: "MCP server", href: "/#install" },
-      { title: "Tool catalog", href: "/#features" },
-      { title: "GitHub", href: "https://github.com/Blockchain-Oracle/portaldot-mcp", external: true },
-    ],
-  },
-  {
-    label: "Network",
-    links: [
-      { title: "Portaldot mainnet", href: "/#how" },
-      { title: "Token: POT", href: "/#how" },
-      { title: "ss58 · 14 decimals", href: "/#how" },
-    ],
-  },
+const NAV: FooterLink[] = [
+  { title: "Docs", href: "/docs" },
+  { title: "Tools", href: "/docs/tools" },
+  { title: "App", href: "/app" },
+  { title: "GitHub", href: "https://github.com/Blockchain-Oracle/portaldot-mcp", external: true },
 ];
 
 function DiamondMark({ className }: { className?: string }) {
@@ -59,110 +33,87 @@ function GithubGlyph({ className }: { className?: string }) {
   );
 }
 
-function XGlyph({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" />
-    </svg>
-  );
-}
-
+/*
+  Footer = a single telemetry strip. Three rows:
+    1. logo · tagline · social
+    2. perforation
+    3. live mainnet · block · latency · version  +  4 small links
+  This replaces the 3-column bento footer with something that reads like
+  the chain itself signed off on the page.
+*/
 export function Footer() {
-  return (
-    <footer className="relative mx-auto flex w-full max-w-6xl flex-col rounded-t-[2.5rem] border-t border-border bg-[radial-gradient(40%_128px_at_50%_0%,var(--accent-soft),transparent)] px-6 py-14 lg:py-20">
-      <div className="absolute top-0 left-1/2 h-px w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/40 blur-sm" />
+  const pulse = useChainPulse();
 
-      <div className="grid w-full gap-12 xl:grid-cols-3 xl:gap-8">
-        <AnimatedContainer className="space-y-4">
-          <Link href="/" className="inline-flex items-center gap-2 text-foreground">
-            <DiamondMark className="size-6 text-primary" />
-            <span className="font-semibold tracking-tight">portaldot-mcp</span>
-          </Link>
-          <p className="max-w-xs text-sm text-muted-foreground">
-            The first MCP server for Portaldot. Read chain state and sign transfers in plain language.
-          </p>
-          <div className="flex items-center gap-3 pt-1">
+  return (
+    <footer className="relative mx-auto w-full max-w-6xl px-4 pb-10 pt-16">
+      <div className="overflow-hidden rounded-3xl bg-card/60 p-1 ring-1 ring-border-strong/60 backdrop-blur">
+        <div className="rounded-[calc(var(--radius)*1.5)] border border-border bg-card receipt-watermark">
+          {/* Row 1 — brand */}
+          <div className="flex flex-col items-start justify-between gap-4 px-5 py-4 sm:flex-row sm:items-center">
+            <Link href="/" className="inline-flex items-center gap-2 text-foreground">
+              <DiamondMark className="size-5 text-primary" />
+              <span className="font-semibold tracking-tight">portaldot-mcp</span>
+              <span className="ml-2 hidden font-mono text-[11px] text-fg-muted sm:inline">
+                · the first MCP server for Portaldot
+              </span>
+            </Link>
             <a
               href="https://github.com/Blockchain-Oracle/portaldot-mcp"
               target="_blank"
               rel="noreferrer"
               aria-label="GitHub"
-              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted transition-colors hover:border-border-strong hover:text-foreground"
             >
-              <GithubGlyph className="size-4" />
-            </a>
-            <a
-              href="https://x.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="X"
-              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            >
-              <XGlyph className="size-4" />
+              <GithubGlyph className="size-3.5" />
+              GitHub
             </a>
           </div>
-          <p className="pt-2 text-xs text-muted-foreground">
-            © {new Date().getFullYear()} portaldot-mcp. MIT licensed.
-          </p>
-        </AnimatedContainer>
 
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-3 xl:col-span-2">
-          {footerColumns.map((column, index) => (
-            <AnimatedContainer key={column.label} delay={0.1 + index * 0.1}>
-              <div>
-                <h3 className="text-xs font-medium tracking-wide text-foreground uppercase">{column.label}</h3>
-                <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-                  {column.links.map((link) => (
-                    <li key={link.title}>
-                      {link.external ? (
-                        <a
-                          href={link.href}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center transition-colors duration-200 hover:text-foreground"
-                        >
-                          {link.title}
-                        </a>
-                      ) : (
-                        <Link
-                          href={link.href}
-                          className="inline-flex items-center transition-colors duration-200 hover:text-foreground"
-                        >
-                          {link.title}
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </AnimatedContainer>
-          ))}
+          <div className="perforation" />
+
+          {/* Row 2 — telemetry + links */}
+          <div className="flex flex-col gap-3 px-5 py-3 text-[10px] font-mono uppercase tracking-[0.22em] text-fg-muted sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="inline-flex items-center gap-1.5">
+                <span
+                  aria-hidden
+                  className="size-1.5 rounded-full bg-telemetry glow-telemetry animate-[pulse-soft_2.4s_ease-in-out_infinite]"
+                />
+                MAINNET
+              </span>
+              <span>·</span>
+              <span className="tabular-nums text-fg-secondary">
+                BLOCK {pulse.height !== null ? `#${pulse.height.toLocaleString()}` : "—"}
+              </span>
+              <span>·</span>
+              <span className="tabular-nums">
+                LATENCY {pulse.latencyMs !== null ? `${pulse.latencyMs}ms` : "—"}
+              </span>
+              <span>·</span>
+              <span>MIT · {new Date().getFullYear()}</span>
+            </div>
+            <nav className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              {NAV.map((link) =>
+                link.external ? (
+                  <a
+                    key={link.title}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="transition-colors hover:text-foreground"
+                  >
+                    {link.title}
+                  </a>
+                ) : (
+                  <Link key={link.title} href={link.href} className="transition-colors hover:text-foreground">
+                    {link.title}
+                  </Link>
+                ),
+              )}
+            </nav>
+          </div>
         </div>
       </div>
     </footer>
-  );
-}
-
-type ViewAnimationProps = {
-  delay?: number;
-  className?: ComponentProps<typeof motion.div>["className"];
-  children: ReactNode;
-};
-
-function AnimatedContainer({ className, delay = 0.1, children }: ViewAnimationProps) {
-  const shouldReduceMotion = useReducedMotion();
-  if (shouldReduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
-  return (
-    <motion.div
-      initial={{ filter: "blur(4px)", translateY: -8, opacity: 0 }}
-      whileInView={{ filter: "blur(0px)", translateY: 0, opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ delay, duration: 0.8 }}
-      className={className}
-    >
-      {children}
-    </motion.div>
   );
 }

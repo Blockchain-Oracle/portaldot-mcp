@@ -15,14 +15,19 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import {
   BalanceCard,
   BlockInfoCard,
+  BountiesCard,
+  ChainInfoCard,
   ErrorCard,
   FeeCard,
   GenericResultCard,
+  IdentityCard,
   SkeletonCard,
+  StakingInfoCard,
   TaskListCard,
   TokenCard,
   TokenListCard,
   TransferCard,
+  ValidatorsCard,
   type TransferInput,
   type TransferOutput,
 } from "@/components/tools";
@@ -266,6 +271,16 @@ export function ChatApp() {
                         return <TokenCard key={tp.toolCallId} data={data} />;
                       case "tool-portaldot_my_tokens":
                         return <TokenListCard key={tp.toolCallId} data={data} />;
+                      case "tool-portaldot_chain_info":
+                        return <ChainInfoCard key={tp.toolCallId} data={data} />;
+                      case "tool-portaldot_validators":
+                        return <ValidatorsCard key={tp.toolCallId} data={data} />;
+                      case "tool-portaldot_staking_info":
+                        return <StakingInfoCard key={tp.toolCallId} data={data} />;
+                      case "tool-portaldot_resolve_address":
+                        return <IdentityCard key={tp.toolCallId} data={data} />;
+                      case "tool-portaldot_list_bounties":
+                        return <BountiesCard key={tp.toolCallId} data={data} />;
                       default:
                         return <GenericResultCard key={tp.toolCallId} label={label} data={data} />;
                     }

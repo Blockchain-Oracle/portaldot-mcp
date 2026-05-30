@@ -368,6 +368,267 @@ export function TokenListCard({ data }: { data: Record<string, unknown> }) {
   );
 }
 
+/* ───────────────────────── Chain info ───────────────────────── */
+
+export function ChainInfoCard({ data }: { data: Record<string, unknown> }) {
+  const token = String(data.token ?? "POT");
+  const decimals = String(data.decimals ?? 14);
+  const ss58 = String(data.ss58Prefix ?? 42);
+  const issuance = String(data.totalIssuance ?? "—");
+  const era = data.currentEra !== null && data.currentEra !== undefined ? String(data.currentEra) : "—";
+  const bestBlock = Number(data.bestBlock ?? 0);
+  const validators = Number(data.validatorCount ?? 0);
+
+  return (
+    <ReceiptCard toolName="portaldot_chain_info" metaRight="NETWORK SNAPSHOT">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <MetricTile label="Best block" value={`#${bestBlock.toLocaleString()}`} large />
+        <MetricTile label="Era" value={era} />
+        <MetricTile label="Validators" value={String(validators)} />
+        <MetricTile label="Total issuance" value={issuance} large />
+        <MetricTile label="Token" value={token} />
+        <MetricTile label="ss58 · dec" value={`${ss58} · ${decimals}`} />
+      </div>
+    </ReceiptCard>
+  );
+}
+
+function MetricTile({ label, value, large }: { label: string; value: string; large?: boolean }) {
+  return (
+    <div className="rounded-lg border border-border bg-surface-2/40 px-3 py-2">
+      <div className="text-[9px] font-mono uppercase tracking-[0.22em] text-fg-muted">{label}</div>
+      <div
+        className={cn(
+          "mt-0.5 truncate text-foreground",
+          large ? "text-[18px]" : "text-[15px]",
+        )}
+        style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── Validators ───────────────────────── */
+
+export function ValidatorsCard({ data }: { data: Record<string, unknown> }) {
+  const all = ((data.validators as string[]) ?? []).filter(Boolean);
+  const count = Number(data.count ?? all.length);
+  const top = all.slice(0, 10);
+
+  return (
+    <ReceiptCard
+      toolName="portaldot_validators"
+      metaRight={`${count} ACTIVE`}
+    >
+      {top.length === 0 ? (
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-fg-muted">
+          —— no active set ——
+        </p>
+      ) : (
+        <>
+          <div className="mb-2 flex items-center justify-between">
+            <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-fg-muted">
+              Top {top.length}
+            </div>
+            <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-fg-muted">
+              of {count}
+            </div>
+          </div>
+          <ul className="divide-y divide-border/70">
+            {top.map((addr, i) => (
+              <li key={addr} className="flex items-center gap-2.5 py-1.5 text-sm">
+                <Mono className="w-6 text-right text-fg-muted">{i + 1}</Mono>
+                <Identicon address={addr} size={18} />
+                <CopyChip value={addr} />
+                <ExplorerLink href={`${SUBSCAN}/account/${addr}`} label="" />
+              </li>
+            ))}
+          </ul>
+          {count > top.length && (
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+              + {count - top.length} more
+            </p>
+          )}
+        </>
+      )}
+    </ReceiptCard>
+  );
+}
+
+/* ───────────────────────── Staking ───────────────────────── */
+
+export function StakingInfoCard({ data }: { data: Record<string, unknown> }) {
+  const address = String(data.address ?? "");
+  const bonded = Boolean(data.bonded);
+  const active = String(data.activePot ?? "0");
+  const total = String(data.totalPot ?? "0");
+  const nominating = ((data.nominating as string[]) ?? []).filter(Boolean);
+
+  return (
+    <ReceiptCard
+      toolName="portaldot_staking_info"
+      tone={bonded ? "success" : "default"}
+      metaRight={bonded ? "BONDED" : "NOT BONDED"}
+    >
+      <div className="mb-3 flex items-center gap-2">
+        <Identicon address={address} size={20} />
+        <CopyChip value={address} />
+      </div>
+
+      {bonded ? (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-lg border border-border bg-surface-2/40 px-3 py-2">
+            <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-fg-muted">Active</div>
+            <div className="leading-none">
+              <Display className="text-[22px]">{active}</Display>{" "}
+              <span className="font-mono text-[11px] text-fg-muted">POT</span>
+            </div>
+          </div>
+          <div className="rounded-lg border border-border bg-surface-2/40 px-3 py-2">
+            <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-fg-muted">Total</div>
+            <div className="leading-none">
+              <Display className="text-[22px]">{total}</Display>{" "}
+              <span className="font-mono text-[11px] text-fg-muted">POT</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-fg-muted">
+          —— account is not bonded ——
+        </p>
+      )}
+
+      {nominating.length > 0 && (
+        <div className="mt-4">
+          <div className="mb-1.5 text-[10px] font-mono uppercase tracking-[0.22em] text-fg-muted">
+            Nominating {nominating.length}
+          </div>
+          <ul className="flex flex-wrap gap-1.5">
+            {nominating.slice(0, 8).map((addr) => (
+              <li
+                key={addr}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2/40 px-2 py-0.5 text-[11px]"
+              >
+                <Identicon address={addr} size={12} />
+                <Mono className="text-fg-secondary">{truncateAddress(addr, 4, 4)}</Mono>
+              </li>
+            ))}
+            {nominating.length > 8 && (
+              <li className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2/40 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+                + {nominating.length - 8}
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+    </ReceiptCard>
+  );
+}
+
+/* ───────────────────────── Identity ───────────────────────── */
+
+export function IdentityCard({ data }: { data: Record<string, unknown> }) {
+  const address = String(data.address ?? "");
+  const identity = data.identity as { display?: string | null; email?: string | null; web?: string | null; twitter?: string | null } | null;
+  const registered = Boolean(identity);
+
+  return (
+    <ReceiptCard
+      toolName="portaldot_resolve_address"
+      metaRight={registered ? "REGISTERED" : "UNREGISTERED"}
+      tone={registered ? "default" : "pending"}
+    >
+      <div className="flex items-center gap-3">
+        <Identicon address={address} size={36} halo={registered} />
+        <div className="min-w-0 flex-1">
+          {registered && identity?.display ? (
+            <>
+              <Display className="block truncate text-[22px] leading-tight">
+                {identity.display}
+              </Display>
+              <div className="mt-0.5">
+                <CopyChip value={address} />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-[14px] font-medium text-fg-secondary">No display name set</div>
+              <div className="mt-0.5">
+                <CopyChip value={address} />
+              </div>
+            </>
+          )}
+        </div>
+        {registered && (
+          <span className="rounded-full border border-success/40 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-success">
+            judged
+          </span>
+        )}
+      </div>
+
+      {registered && identity && (
+        <div className="mt-4 space-y-1.5 text-sm">
+          {identity.email && <Row k="Email" v={<Mono className="text-fg-secondary">{identity.email}</Mono>} />}
+          {identity.web && (
+            <Row
+              k="Web"
+              v={
+                <a
+                  href={identity.web.startsWith("http") ? identity.web : `https://${identity.web}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-mono text-telemetry transition-colors hover:text-foreground"
+                >
+                  {identity.web}
+                </a>
+              }
+            />
+          )}
+          {identity.twitter && <Row k="Twitter" v={<Mono className="text-fg-secondary">{identity.twitter}</Mono>} />}
+        </div>
+      )}
+    </ReceiptCard>
+  );
+}
+
+/* ───────────────────────── Bounties ───────────────────────── */
+
+export function BountiesCard({ data }: { data: Record<string, unknown> }) {
+  const count = Number(data.count ?? 0);
+  const bounties = ((data.bounties as Array<Record<string, unknown>>) ?? []);
+  return (
+    <ReceiptCard
+      toolName="portaldot_list_bounties"
+      metaRight={`${count} BOUNT${count === 1 ? "Y" : "IES"}`}
+    >
+      {bounties.length === 0 ? (
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-fg-muted">
+          —— treasury currently has no open bounties ——
+        </p>
+      ) : (
+        <ul className="divide-y divide-border/70">
+          {bounties.map((b) => (
+            <li key={String(b.index)} className="flex items-start gap-3 py-2">
+              <Mono className="mt-0.5 w-12 shrink-0 text-fg-muted">#{String(b.index)}</Mono>
+              <div className="min-w-0 flex-1">
+                <p className="line-clamp-2 text-[13px] text-foreground">{String(b.description) || "—"}</p>
+              </div>
+              <Display className="shrink-0 text-[15px] text-foreground">
+                {String(b.valuePot)}
+                <span className="ml-1 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+                  POT
+                </span>
+              </Display>
+            </li>
+          ))}
+        </ul>
+      )}
+    </ReceiptCard>
+  );
+}
+
 /* ───────────────────────── Generic ───────────────────────── */
 
 const isSs58 = (s: string) => /^[1-9A-HJ-NP-Za-km-z]{45,}$/.test(s) && s.startsWith("5");

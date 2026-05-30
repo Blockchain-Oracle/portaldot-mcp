@@ -1,5 +1,5 @@
 {
-  "name": "portaldot-mcp",
+  "name": "portaldot-mcp-monorepo",
   "version": "0.1.0",
   "private": true,
   "description": "The first MCP server for Portaldot — natural-language onchain execution + generative-UI web app.",

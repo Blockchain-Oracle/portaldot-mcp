@@ -1,6 +1,6 @@
 {
   "name": "portaldot-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "The first MCP server for Portaldot — 34 onchain tools (balances, transfers, tokens, staking, identity, contracts) for the Portaldot Substrate chain, over stdio for any MCP client (Claude Code, Cursor, Claude Desktop).",
   "keywords": [

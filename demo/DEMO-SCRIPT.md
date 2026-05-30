@@ -6,7 +6,7 @@ Spoken pitch. ~90 seconds. Read it out loud.
 
 ## Hook
 
-Until today, Portaldot had no AI tool. Ethereum has one. Solana has one. We built one for Portaldot. You just talk to it.
+Until today, Portaldot had no AI tool. Ethereum has one. Solana has one. We built one for Portaldot. You just talk to it. 
 
 ## The problem
 

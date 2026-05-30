@@ -1,145 +1,174 @@
 "use client";
 
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowRight, Wallet, ShieldCheck } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { WordsPullUp } from "@/components/ui/prisma-hero";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+import { ArrowRight } from "lucide-react";
+import { BlockHeightTicker } from "./block-height-ticker";
+
+// Dynamic-import the r3f canvas so three.js never touches the SSR bundle.
+const HeroWave = dynamic(() => import("./hero-wave"), { ssr: false });
+
+const ROTATING_PROMPTS = [
+  "What's the latest block on Portaldot?",
+  "Show me my balance and recent transfers",
+  "Who are the active validators right now?",
+  "Send 1 POT to 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+];
 
 export function Hero() {
+  const router = useRouter();
+  const [prompt, setPrompt] = useState("");
+  const placeholder = useTypewriterPlaceholder(ROTATING_PROMPTS, prompt.length === 0);
+
+  function submit() {
+    const t = prompt.trim();
+    if (!t) {
+      router.push("/app");
+      return;
+    }
+    router.push("/app?prompt=" + encodeURIComponent(t));
+  }
+
   return (
-    <section className="relative overflow-hidden px-4 pt-20 pb-16 sm:pt-28 sm:pb-24">
-      {/* violet radial glow — on-brand, not a linear AI gradient */}
+    <section className="relative isolate flex min-h-[92vh] items-center overflow-hidden">
+      {/* HeroWave canvas — sits behind content */}
+      <div className="absolute inset-0 -z-10">
+        <HeroWave />
+      </div>
+
+      {/* Floor gradient — pulls the bottom darker so wave fades into the page */}
       <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[-12%] -z-10 h-[520px] w-[820px] max-w-[120vw] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
+        className="absolute inset-x-0 bottom-0 -z-10 h-2/3"
         style={{
           background:
-            "radial-gradient(closest-side, var(--accent-soft), transparent 72%)",
-          animation: "glow 6s ease-in-out infinite",
+            "linear-gradient(to top, var(--background) 8%, transparent 90%)",
         }}
-      />
-      <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.035]"
+      />
+      {/* Vignette — pulls the corners darker to keep the eye on copy */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10"
         style={{
-          backgroundImage:
-            "linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)",
-          backgroundSize: "44px 44px",
-          maskImage: "radial-gradient(circle at 50% 30%, black, transparent 75%)",
+          background:
+            "radial-gradient(ellipse at center 30%, transparent 0%, var(--background) 92%)",
         }}
+        aria-hidden
       />
 
-      <div className="mx-auto grid max-w-5xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-        <div className="flex flex-col items-start">
-          <motion.span
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-1 text-xs text-muted-foreground"
-          >
-            <span className="size-1.5 rounded-full bg-primary" />
-            MCP server · Portaldot L0
-          </motion.span>
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-4 pt-32 pb-20 text-center">
+        <BlockHeightTicker />
 
-          <h1 className="mt-6 font-semibold tracking-[-0.03em] text-foreground text-4xl leading-[1.05] sm:text-5xl md:text-6xl">
-            <WordsPullUp text="Portaldot, in" />
-            <br className="hidden sm:block" />
-            <span className="text-primary">
-              <WordsPullUp text="plain language." />
-            </span>
-          </h1>
+        <h1
+          className="mt-7 font-display text-balance text-5xl font-medium leading-[1.02] tracking-[-0.025em] text-foreground sm:text-6xl md:text-7xl"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Portaldot, in{" "}
+          <em className="font-medium italic text-foreground">plain language</em>
+          <span className="text-primary">.</span>
+        </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            className="mt-6 max-w-md text-base text-muted-foreground sm:text-lg"
-          >
-            The first MCP server for Portaldot. Ask in natural language — read balances,
-            blocks, validators and tokens, then sign transfers with your own wallet.
-            34 onchain tools, no glue code.
-          </motion.p>
+        <p className="mt-6 max-w-xl text-balance text-base leading-relaxed text-fg-secondary sm:text-lg">
+          The first MCP server for Portaldot. Ask in natural language — read
+          balances, blocks, validators, tokens; sign with your own wallet.{" "}
+          <span className="text-foreground">34 onchain tools, no glue code.</span>
+        </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-8 flex flex-wrap items-center gap-3"
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            submit();
+          }}
+          className="mt-9 w-full max-w-2xl"
+        >
+          <div
+            className={
+              "group relative flex items-center gap-2 rounded-full border border-border-strong " +
+              "bg-card/70 px-2 py-2 backdrop-blur-xl " +
+              "shadow-[0_8px_36px_-12px_rgba(0,0,0,0.55)] " +
+              "transition-colors focus-within:border-primary"
+            }
           >
-            <Link href="/app" className={cn(buttonVariants({ size: "lg" }), "group")}>
-              Open the app
-              <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-            <a
-              href="https://github.com/Blockchain-Oracle/portaldot-mcp"
-              target="_blank"
-              rel="noreferrer"
-              className={buttonVariants({ size: "lg", variant: "outline" })}
+            <input
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder={placeholder}
+              aria-label="Ask Portaldot"
+              spellCheck={false}
+              className="min-w-0 flex-1 bg-transparent px-4 py-2 text-[15px] text-foreground outline-none placeholder:text-fg-muted"
+            />
+            <button
+              type="submit"
+              aria-label="Open the app"
+              className={
+                "inline-flex shrink-0 items-center gap-1.5 rounded-full " +
+                "bg-primary px-4 h-10 text-[13px] font-semibold text-primary-foreground " +
+                "transition-[transform,filter] hover:-translate-y-px hover:brightness-110 " +
+                "shadow-[0_0_22px_-4px_oklch(0.66_0.22_288/65%)]"
+              }
             >
-              View on GitHub
-            </a>
-          </motion.div>
-
-          <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5">
-              <Wallet className="size-3.5 text-primary" /> Browser-wallet signing
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <ShieldCheck className="size-3.5 text-primary" /> Keys never leave your device
-            </span>
+              <span className="hidden sm:inline">Open the app</span>
+              <ArrowRight className="size-4" />
+            </button>
           </div>
-        </div>
-
-        <HeroPreview />
+          <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-fg-muted">
+            press enter to open in the app
+          </p>
+        </form>
       </div>
     </section>
   );
 }
 
-function HeroPreview() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className="relative w-full"
-    >
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_60px_-24px_rgba(0,0,0,0.7)]">
-        <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-          <span className="size-2.5 rounded-full bg-destructive/70" />
-          <span className="size-2.5 rounded-full bg-pending/70" />
-          <span className="size-2.5 rounded-full bg-success/70" />
-          <span className="ml-2 font-mono text-xs text-muted-foreground">portaldot · chat</span>
-        </div>
+/* ───── Typewriter placeholder ─────────────────────────────────────────────
+   Cycle through prompts: type char-by-char, hold, erase, advance. Runs only
+   while the input is empty (`active` toggles on text-entry). */
+function useTypewriterPlaceholder(prompts: string[], active: boolean): string {
+  const [text, setText] = useState("");
+  const stateRef = useRef({ i: 0, j: 0, deleting: false, raf: 0 as unknown as ReturnType<typeof setTimeout> });
 
-        <div className="space-y-3 p-4">
-          <div className="ml-auto w-fit max-w-[80%] rounded-xl bg-secondary px-3 py-2 text-sm text-foreground">
-            What&apos;s the balance of 5F3sA…utQY?
-          </div>
+  // Stable copy of prompts to avoid effect churn
+  const list = useMemo(() => prompts.slice(), [prompts]);
 
-          <div className="rounded-xl border border-border bg-background/60 p-4">
-            <div className="mb-3 flex items-center gap-2 text-[13px] text-muted-foreground">
-              <Wallet className="size-3.5 text-primary" /> Balance
-            </div>
-            <div className="mb-2 font-mono text-xs text-muted-foreground">5F3sA…utQY</div>
-            <div className="flex items-center justify-between py-0.5 text-sm">
-              <span className="text-muted-foreground">Free</span>
-              <span className="font-mono text-foreground">42.0000 POT</span>
-            </div>
-            <div className="flex items-center justify-between py-0.5 text-sm">
-              <span className="text-muted-foreground">Reserved</span>
-              <span className="font-mono text-foreground">0.0000 POT</span>
-            </div>
-            <div className="my-2 h-px bg-border" />
-            <div className="flex items-center justify-between py-0.5 text-sm">
-              <span className="text-muted-foreground">Total</span>
-              <span className="font-mono font-medium text-foreground">42.0000 POT</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
+  useEffect(() => {
+    if (!active) {
+      clearTimeout(stateRef.current.raf);
+      setText("");
+      return;
+    }
+    const TYPE_MS = 38;
+    const ERASE_MS = 22;
+    const HOLD_MS = 1500;
+    const BETWEEN_MS = 400;
+
+    function step() {
+      const s = stateRef.current;
+      const current = list[s.i % list.length];
+      if (!s.deleting) {
+        if (s.j < current.length) {
+          s.j += 1;
+          setText(current.slice(0, s.j));
+          s.raf = setTimeout(step, TYPE_MS);
+        } else {
+          s.deleting = true;
+          s.raf = setTimeout(step, HOLD_MS);
+        }
+      } else {
+        if (s.j > 0) {
+          s.j -= 1;
+          setText(current.slice(0, s.j));
+          s.raf = setTimeout(step, ERASE_MS);
+        } else {
+          s.deleting = false;
+          s.i = (s.i + 1) % list.length;
+          s.raf = setTimeout(step, BETWEEN_MS);
+        }
+      }
+    }
+
+    stateRef.current = { i: 0, j: 0, deleting: false, raf: setTimeout(step, 600) };
+    return () => clearTimeout(stateRef.current.raf);
+  }, [list, active]);
+
+  return active ? text || "Ask Portaldot…" : "Ask Portaldot…";
 }

@@ -3,6 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUp, Sparkles, Wallet, ShieldCheck } from "lucide-react";
 import { useWallet } from "@/lib/wallet";
 import { signAndSendTransfer } from "@/lib/polkadot";
@@ -99,6 +100,23 @@ export function ChatApp() {
     setInput("");
     void sendMessage({ text: t });
   };
+
+  // Consume `?prompt=` from the hero AI input — fire once, after the wallet
+  // is connected. Survives reload by clearing the URL via router.replace.
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const consumedPrompt = useRef(false);
+  useEffect(() => {
+    if (consumedPrompt.current) return;
+    if (!account) return;
+    const incoming = searchParams.get("prompt");
+    if (!incoming) return;
+    consumedPrompt.current = true;
+    send(incoming);
+    // Strip ?prompt= so reload doesn't refire
+    router.replace("/app", { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, searchParams]);
 
   function newChat() {
     setMessages([]);

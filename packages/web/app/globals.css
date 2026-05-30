@@ -2,12 +2,16 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* PP Neue Montreal is loaded via <link rel="stylesheet"> in app/layout.tsx
+   to satisfy the CSS-spec @import-order rule. */
+
 @custom-variant dark (&:is(.dark *));
 
 /*
-  Tokens — single source of truth, see docs/DESIGN.md.
-  Dark-only app: :root and .dark are identical. Premium components read the
-  shadcn semantic vars; project components read the aliases — both resolve here.
+  ───── INSTRUMENT PANEL — token system ──────────────────────────────────────
+  Dark-only canvas. Violet is action-only. Cyan is telemetry-only.
+  Aliases for existing rebuilt components remain — Phase 1 keeps everything
+  compiling while later phases rebuild on the new ReceiptCard base.
 */
 @theme inline {
   /* shadcn semantic roles */
@@ -35,13 +39,19 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  /* project aliases (used across existing + rebuilt components) */
+  /* Instrument Panel — new semantic tokens */
+  --color-telemetry: var(--telemetry);
+  --color-telemetry-soft: var(--telemetry-soft);
+  --color-primary-press: var(--primary-press);
+  --color-border-strong: var(--border-strong);
+
+  /* project aliases (kept so existing rebuilt components still compile) */
   --color-bg: var(--background);
   --color-surface: var(--card);
   --color-surface-2: var(--surface-2);
-  --color-border-hover: var(--border-hover);
+  --color-border-hover: var(--border-strong);
   --color-fg: var(--foreground);
-  --color-fg-secondary: var(--muted-foreground);
+  --color-fg-secondary: var(--fg-secondary);
   --color-fg-muted: var(--fg-muted);
   --color-brand: var(--primary);
   --color-accent-soft: var(--accent-soft);
@@ -51,7 +61,9 @@
   /* type */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-heading: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Neue Montreal", var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-display);
+  --font-stamp: var(--font-geist-mono), ui-monospace, monospace;
 
   /* radius */
   --radius-sm: calc(var(--radius) * 0.62);
@@ -61,97 +73,131 @@
   --radius-2xl: calc(var(--radius) * 1.7);
   --radius-card: var(--radius);
 
-  /* motion */
-  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  /* motion vocabulary */
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1); /* legacy alias for --ease-print */
+  --ease-print: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-stagger: cubic-bezier(0.6, 0, 0.2, 1);
+
+  --dur-fast: 180ms;
+  --dur-base: 280ms;
+  --dur-slow: 480ms;
+  --dur-print: 620ms;
 
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
-  --animate-rise: rise 0.22s var(--ease-premium) both;
+  --animate-rise: rise 0.22s var(--ease-print) both;
   --animate-glow: glow 6s ease-in-out infinite;
+  --animate-print: print 0.62s var(--ease-print) both;
+  --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
 }
 
 :root {
   --radius: 0.875rem; /* 14px */
 
-  --background: oklch(0.145 0.012 285);
-  --foreground: oklch(0.965 0.004 285);
-  --card: oklch(0.185 0.014 285);
-  --card-foreground: oklch(0.965 0.004 285);
-  --popover: oklch(0.185 0.014 285);
-  --popover-foreground: oklch(0.965 0.004 285);
-  --primary: oklch(0.625 0.205 285);
+  /* canvas + surfaces */
+  --background: oklch(0.118 0.008 282);
+  --foreground: oklch(0.975 0.003 282);
+  --card: oklch(0.158 0.010 282);
+  --card-foreground: oklch(0.975 0.003 282);
+  --popover: oklch(0.158 0.010 282);
+  --popover-foreground: oklch(0.975 0.003 282);
+  --surface-2: oklch(0.198 0.012 282);
+
+  /* action — violet only */
+  --primary: oklch(0.66 0.22 288);
+  --primary-press: oklch(0.58 0.24 288);
   --primary-foreground: oklch(0.16 0.02 285);
-  --secondary: oklch(0.225 0.015 285);
-  --secondary-foreground: oklch(0.965 0.004 285);
-  --muted: oklch(0.225 0.015 285);
-  --muted-foreground: oklch(0.725 0.013 286);
-  --accent: oklch(0.625 0.205 285 / 14%);
-  --accent-foreground: oklch(0.78 0.14 285);
-  --destructive: oklch(0.71 0.18 22);
-  --border: oklch(0.285 0.018 285);
-  --input: oklch(0.225 0.015 285);
-  --ring: oklch(0.625 0.205 285);
-  --chart-1: oklch(0.625 0.205 285);
-  --chart-2: oklch(0.78 0.16 165);
-  --chart-3: oklch(0.83 0.16 85);
-  --chart-4: oklch(0.68 0.19 310);
-  --chart-5: oklch(0.71 0.18 22);
+  --ring: oklch(0.66 0.22 288 / 55%);
 
-  /* raw aliases */
-  --surface-2: oklch(0.225 0.015 285);
-  --border-hover: oklch(0.355 0.024 286);
-  --fg-muted: oklch(0.555 0.016 286);
-  --success: oklch(0.78 0.16 165);
-  --pending: oklch(0.83 0.16 85);
-  --accent-soft: oklch(0.625 0.205 285 / 14%);
+  /* telemetry — cyan only (never a button) */
+  --telemetry: oklch(0.78 0.13 220);
+  --telemetry-soft: oklch(0.78 0.13 220 / 14%);
 
-  --sidebar: oklch(0.185 0.014 285);
-  --sidebar-foreground: oklch(0.965 0.004 285);
-  --sidebar-primary: oklch(0.625 0.205 285);
+  /* state */
+  --success: oklch(0.78 0.13 175);
+  --pending: oklch(0.79 0.14 70);
+  --destructive: oklch(0.66 0.21 25);
+
+  /* neutrals + borders */
+  --secondary: oklch(0.198 0.012 282);
+  --secondary-foreground: oklch(0.975 0.003 282);
+  --muted: oklch(0.198 0.012 282);
+  --muted-foreground: oklch(0.74 0.010 282);
+  --fg-secondary: oklch(0.74 0.010 282);
+  --fg-muted: oklch(0.52 0.012 282);
+  --accent: oklch(0.66 0.22 288 / 14%);
+  --accent-foreground: oklch(0.78 0.14 288);
+  --accent-soft: oklch(0.66 0.22 288 / 14%);
+  --border: oklch(0.265 0.014 282);
+  --border-strong: oklch(0.345 0.018 282);
+  --input: oklch(0.198 0.012 282);
+
+  /* charts — kept compatible with shadcn; map to our palette */
+  --chart-1: oklch(0.66 0.22 288);    /* violet */
+  --chart-2: oklch(0.78 0.13 220);    /* telemetry cyan */
+  --chart-3: oklch(0.78 0.13 175);    /* success */
+  --chart-4: oklch(0.79 0.14 70);     /* pending */
+  --chart-5: oklch(0.66 0.21 25);     /* destructive */
+
+  /* sidebar — match the rest */
+  --sidebar: oklch(0.158 0.010 282);
+  --sidebar-foreground: oklch(0.975 0.003 282);
+  --sidebar-primary: oklch(0.66 0.22 288);
   --sidebar-primary-foreground: oklch(0.16 0.02 285);
-  --sidebar-accent: oklch(0.225 0.015 285);
-  --sidebar-accent-foreground: oklch(0.965 0.004 285);
-  --sidebar-border: oklch(0.285 0.018 285);
-  --sidebar-ring: oklch(0.625 0.205 285);
+  --sidebar-accent: oklch(0.198 0.012 282);
+  --sidebar-accent-foreground: oklch(0.975 0.003 282);
+  --sidebar-border: oklch(0.265 0.014 282);
+  --sidebar-ring: oklch(0.66 0.22 288);
 }
 
 .dark {
-  --background: oklch(0.145 0.012 285);
-  --foreground: oklch(0.965 0.004 285);
-  --card: oklch(0.185 0.014 285);
-  --card-foreground: oklch(0.965 0.004 285);
-  --popover: oklch(0.185 0.014 285);
-  --popover-foreground: oklch(0.965 0.004 285);
-  --primary: oklch(0.625 0.205 285);
+  --background: oklch(0.118 0.008 282);
+  --foreground: oklch(0.975 0.003 282);
+  --card: oklch(0.158 0.010 282);
+  --card-foreground: oklch(0.975 0.003 282);
+  --popover: oklch(0.158 0.010 282);
+  --popover-foreground: oklch(0.975 0.003 282);
+  --surface-2: oklch(0.198 0.012 282);
+
+  --primary: oklch(0.66 0.22 288);
+  --primary-press: oklch(0.58 0.24 288);
   --primary-foreground: oklch(0.16 0.02 285);
-  --secondary: oklch(0.225 0.015 285);
-  --secondary-foreground: oklch(0.965 0.004 285);
-  --muted: oklch(0.225 0.015 285);
-  --muted-foreground: oklch(0.725 0.013 286);
-  --accent: oklch(0.625 0.205 285 / 14%);
-  --accent-foreground: oklch(0.78 0.14 285);
-  --destructive: oklch(0.71 0.18 22);
-  --border: oklch(0.285 0.018 285);
-  --input: oklch(0.225 0.015 285);
-  --ring: oklch(0.625 0.205 285);
-  --chart-1: oklch(0.625 0.205 285);
-  --chart-2: oklch(0.78 0.16 165);
-  --chart-3: oklch(0.83 0.16 85);
-  --chart-4: oklch(0.68 0.19 310);
-  --chart-5: oklch(0.71 0.18 22);
-  --surface-2: oklch(0.225 0.015 285);
-  --border-hover: oklch(0.355 0.024 286);
-  --fg-muted: oklch(0.555 0.016 286);
-  --success: oklch(0.78 0.16 165);
-  --pending: oklch(0.83 0.16 85);
-  --accent-soft: oklch(0.625 0.205 285 / 14%);
-  --sidebar: oklch(0.185 0.014 285);
-  --sidebar-foreground: oklch(0.965 0.004 285);
-  --sidebar-primary: oklch(0.625 0.205 285);
+  --ring: oklch(0.66 0.22 288 / 55%);
+
+  --telemetry: oklch(0.78 0.13 220);
+  --telemetry-soft: oklch(0.78 0.13 220 / 14%);
+
+  --success: oklch(0.78 0.13 175);
+  --pending: oklch(0.79 0.14 70);
+  --destructive: oklch(0.66 0.21 25);
+
+  --secondary: oklch(0.198 0.012 282);
+  --secondary-foreground: oklch(0.975 0.003 282);
+  --muted: oklch(0.198 0.012 282);
+  --muted-foreground: oklch(0.74 0.010 282);
+  --fg-secondary: oklch(0.74 0.010 282);
+  --fg-muted: oklch(0.52 0.012 282);
+  --accent: oklch(0.66 0.22 288 / 14%);
+  --accent-foreground: oklch(0.78 0.14 288);
+  --accent-soft: oklch(0.66 0.22 288 / 14%);
+  --border: oklch(0.265 0.014 282);
+  --border-strong: oklch(0.345 0.018 282);
+  --input: oklch(0.198 0.012 282);
+
+  --chart-1: oklch(0.66 0.22 288);
+  --chart-2: oklch(0.78 0.13 220);
+  --chart-3: oklch(0.78 0.13 175);
+  --chart-4: oklch(0.79 0.14 70);
+  --chart-5: oklch(0.66 0.21 25);
+
+  --sidebar: oklch(0.158 0.010 282);
+  --sidebar-foreground: oklch(0.975 0.003 282);
+  --sidebar-primary: oklch(0.66 0.22 288);
   --sidebar-primary-foreground: oklch(0.16 0.02 285);
-  --sidebar-accent: oklch(0.225 0.015 285);
-  --sidebar-accent-foreground: oklch(0.965 0.004 285);
-  --sidebar-border: oklch(0.285 0.018 285);
-  --sidebar-ring: oklch(0.625 0.205 285);
+  --sidebar-accent: oklch(0.198 0.012 282);
+  --sidebar-accent-foreground: oklch(0.975 0.003 282);
+  --sidebar-border: oklch(0.265 0.014 282);
+  --sidebar-ring: oklch(0.66 0.22 288);
 }
 
 @layer base {
@@ -160,12 +206,107 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    position: relative;
   }
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
   }
+  /* tabular figures for any element that displays a number we care about */
+  .tabular,
+  [data-mono],
+  code,
+  pre {
+    font-variant-numeric: tabular-nums;
+  }
 }
+
+/* ───── Atmosphere ──────────────────────────────────────────────────────── */
+
+/*
+  Noise grain — inline SVG fractal noise as a data URL on body::after.
+  Zero JS, zero network, ~1KB. The single biggest "less shadcn template" lever.
+*/
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 160px 160px;
+}
+
+/* Conic-gradient corner glows — utility classes used on landing sections.
+   Use as: <section class="relative atmos-corners">…</section> */
+.atmos-corners::before,
+.atmos-corners::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 520px;
+  height: 520px;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.10;
+  z-index: 0;
+}
+.atmos-corners::before {
+  top: -160px;
+  left: -180px;
+  background: conic-gradient(from 218deg, var(--primary), transparent 40%);
+}
+.atmos-corners::after {
+  bottom: -200px;
+  right: -200px;
+  background: conic-gradient(from 38deg, var(--primary), transparent 40%);
+}
+.atmos-corners > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Cyan telemetry glow — small, for live dots and ticker pills */
+.glow-telemetry {
+  box-shadow: 0 0 10px var(--telemetry), 0 0 22px var(--telemetry-soft);
+}
+.glow-primary {
+  box-shadow: 0 0 14px var(--primary), 0 0 36px oklch(0.66 0.22 288 / 35%);
+}
+
+/* Receipt watermark — repeating "PORTALDOT" diagonal across surface-2.
+   Apply with class="receipt-watermark" on the card surface. */
+.receipt-watermark {
+  position: relative;
+}
+.receipt-watermark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='80'><text x='0' y='40' font-family='monospace' font-size='14' fill='%23ffffff' letter-spacing='3' transform='rotate(-18 0 40)'>PORTALDOT · PORTALDOT</text></svg>");
+  background-size: 240px 80px;
+  border-radius: inherit;
+}
+
+/* SVG perforation divider — apply as <div class="perforation" /> between meta and content */
+.perforation {
+  height: 1px;
+  background-image: linear-gradient(
+    to right,
+    var(--border-strong) 0,
+    var(--border-strong) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  background-size: 6px 1px;
+  background-repeat: repeat-x;
+}
+
+/* ───── Keyframes ───────────────────────────────────────────────────────── */
 
 @keyframes shimmer {
   0% { opacity: 0.45; }
@@ -179,4 +320,38 @@
 @keyframes glow {
   0%, 100% { opacity: 0.55; transform: scale(1); }
   50% { opacity: 0.85; transform: scale(1.06); }
+}
+
+/* The "receipt prints out" reveal — clip-path animates downward from the perforation */
+@keyframes print {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0% 0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* Respect reduced motion — disable the heavy stuff, keep entrances subtle */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  @keyframes print {
+    from { opacity: 0; clip-path: inset(0 0 0% 0); }
+    to { opacity: 1; clip-path: inset(0 0 0% 0); }
+  }
 }

@@ -4,12 +4,13 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowUp, Sparkles, Wallet, ShieldCheck } from "lucide-react";
+import { ArrowUp, Sparkles } from "lucide-react";
 import { useWallet } from "@/lib/wallet";
 import { signAndSendTransfer } from "@/lib/polkadot";
 import { WalletPill } from "@/components/WalletPill";
 import { AppSidebar } from "@/components/app/app-sidebar";
 import { Markdown } from "@/components/app/markdown";
+import { WalletGate } from "@/components/app/wallet-gate";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import {
   BalanceCard,
@@ -66,7 +67,7 @@ function hasError(output: unknown): output is { error: string } {
 }
 
 export function ChatApp() {
-  const { account, connect, connecting, error: walletError } = useWallet();
+  const { account } = useWallet();
   // Keep the latest connected address available to the transport without
   // recreating it — every chat request carries the user's wallet address.
   const addressRef = useRef<string | null>(account?.address ?? null);
@@ -163,33 +164,7 @@ export function ChatApp() {
         <div className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-3xl space-y-4 px-4 py-6">
             {!account ? (
-              <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
-                <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/12 text-primary">
-                  <Wallet className="size-6" />
-                </div>
-                <div className="max-w-md">
-                  <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                    Connect your wallet to start
-                  </h1>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Portaldot reads your balances and signs transfers from <span className="text-foreground">your</span>{" "}
-                    connected account. Connect a Polkadot wallet (SubWallet or Talisman) to begin.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={connect}
-                  disabled={connecting}
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-[transform,filter] hover:-translate-y-px hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50"
-                >
-                  <Wallet className="size-4" />
-                  {connecting ? "Connecting…" : "Connect Wallet"}
-                </button>
-                {walletError && <p className="max-w-xs text-xs text-destructive">{walletError}</p>}
-                <p className="inline-flex items-center gap-1.5 text-xs text-fg-muted">
-                  <ShieldCheck className="size-3.5 text-primary" /> Keys never leave your device.
-                </p>
-              </div>
+              <WalletGate />
             ) : empty ? (
               <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
                 <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/12 text-primary">
